@@ -1,0 +1,8 @@
+{
+  "appId": "com.nomz.padeldoubles",
+  "appName": "Padel Doubles 3D",
+  "webDir": "www",
+  "android": {
+    "backgroundColor": "#0a1120"
+  }
+}

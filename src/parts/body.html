@@ -1,0 +1,256 @@
+
+<div id="stage" aria-label="Padel court"></div>
+
+<div class="hud" id="hud" hidden>
+  <div id="board" aria-live="polite">
+    <div class="row"><div id="chipP" style="background:var(--you)"></div><div class="name"><span class="long" id="nameP">You + Partner</span><span class="short">Us</span></div>
+      <div class="srv"><i id="srvP"></i></div><div class="g" id="gP">0</div><div class="p" id="pP">0</div></div>
+    <div class="row"><div id="chipC" style="background:var(--cpu)"></div><div class="name"><span class="long" id="nameC">CPU Team</span><span class="short">Them</span></div>
+      <div class="srv"><i id="srvC"></i></div><div class="g" id="gC">0</div><div class="p" id="pC">0</div></div>
+  </div>
+  <div id="round" hidden></div>
+  <div id="tbtag" hidden>TIE-BREAK</div>
+  <div id="tools">
+    <button class="iconbtn" id="btnSound" aria-label="Sound on or off"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path id="snWave" d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12"/></svg></button>
+    <button class="iconbtn" id="btnFull" aria-label="Full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <button class="iconbtn" id="btnPause" aria-label="Pause"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></button>
+  </div>
+  <div id="call"></div>
+  <div id="prompt" hidden></div>
+  <div id="joy" class="touchonly"><b id="joyKnob"></b><span>MOVE</span></div>
+  <div id="swing" class="touchonly"><div>SWING<small>↑ SMASH</small></div></div>
+  <button id="btnLob" class="shotbtn touchonly" aria-label="Lob">LOB</button>
+  <button id="btnDrop" class="shotbtn touchonly" aria-label="Drop shot">DROP</button>
+  <div id="shotTag"></div>
+  <div id="proPad" class="touchonly">
+    <button class="pb" id="pbSmash" data-shot="smash">SMASH</button>
+    <button class="pb" id="pbLob" data-shot="lob">LOB</button>
+    <button class="pb" id="pbDrop" data-shot="drop">DROP</button>
+    <button class="pb" id="pbDrive" data-shot="drive">DRIVE</button>
+    <button class="pb" id="pbSuper" data-shot="super" hidden>SUPER</button>
+    <div id="pwr"><i id="pwrFill"></i><span id="pwrLab">POWER</span></div>
+  </div>
+  <div id="meters" class="touchonly"><div class="mt"><span>STAMINA</span><i><b id="stamFill"></b></i></div><div class="mt sup"><span>SUPER</span><i><b id="supFill"></b></i></div></div>
+  <div id="errBox" hidden></div>
+  <div id="chal" hidden></div>
+  <pre id="dbg" hidden></pre>
+  <canvas id="swipeFx"></canvas>
+  <div id="legend" class="touchonly"><span class="lg-stick"><b>DRAG</b> (left thumb, or slow drag anywhere) = run · <b>QUICK SWIPE</b> = hit · direction = aim · faster = harder</span><span class="lg-stick"><b>SWIPE DOWN</b> lob · <b>short soft</b> = drop · <b>HIGH BALL:</b> straight = bandeja · hard = smash · <b>angled = víbora</b></span><span class="lg-pro"><b>LEFT THUMB</b> run + aim · <b>HOLD</b> a shot = power · <b>RELEASE</b> on the ring</span></div>
+</div>
+
+<!-- HOME -->
+<div class="overlay" id="home">
+  <div class="card home">
+    <h1 class="brand">Padel<br><em>Doubles</em> 3D</h1>
+    <div class="profile">
+      <div class="avatar" id="homeAvatar">Y</div>
+      <div style="min-width:0">
+        <div class="pname" id="homeName">Player</div>
+        <div class="lvl" id="homeLvl">Level 1</div>
+        <div class="xpbar"><i id="homeXp" style="width:0%"></i></div>
+        <div class="trophies" id="homeTrophies" style="margin-top:6px"></div>
+      </div>
+      <div style="display:grid;gap:4px;justify-items:end"><span class="coins" id="homeCoins">0</span><span class="save" id="saveState">Saved on this device</span></div>
+    </div>
+    <div class="tiles">
+      <button class="tile primary" id="goChamps"><b>Championships</b><span id="champHint">Win titles from the Lowveld Club Open to the World Finals.</span></button>
+      <button class="tile" id="goQuick"><b>Quick match</b><span>Pick a partner and a level, play one set.</span></button>
+      <button class="tile" id="goPlayer"><b>My player</b><span id="playerHint">Skills and look.</span><i class="badge" id="spBadge" hidden></i></button>
+      <button class="tile" id="goPartners"><b>Partners</b><span id="partnerHint">Choose who plays beside you.</span></button>
+      <button class="tile" id="goChallenges"><b>Challenges</b><span>15 padel missions. Earn up to 3 stars each.</span></button>
+      <button class="tile" id="goTraining"><b>Training</b><span id="trainHint">Ball-machine drills that earn XP.</span></button>
+      <button class="tile" id="goLeaders"><b>Leaderboard</b><span id="leadHint">See how you rank against friends.</span></button>
+    </div>
+    <div class="prefs"><div class="row2" style="gap:8px"><button class="btn ghost small" id="goSettings">Settings</button><button class="btn ghost small online-only" id="goFeedback" hidden>Send feedback</button><button class="btn small" id="btnInstall" hidden>Install app</button></div><p class="sub" id="installHint" hidden style="font-size:13px"></p><span id="settingsHint"></span><span class="save" id="verTag"></span></div>
+    <p id="rotate">Turn your phone sideways for the widest view.</p>
+  </div>
+</div>
+
+<!-- CHALLENGES -->
+<div class="overlay" id="challenges" hidden>
+  <div class="card wide">
+    <div class="topbar"><button class="back" data-go="home">← Home</button><span class="coins" id="chalStars" style="color:var(--gold)">0 ★</span></div>
+    <p class="eyebrow">Missions</p><h2 class="h2">Challenges</h2>
+    <p class="sub">One goal per challenge. Finish it for 1 to 3 stars; faster and cleaner earns more. Stars unlock the Pro and Legend tiers. New stars pay 30 coins each.</p>
+    <div class="tiers" id="chalList"></div>
+  </div>
+</div>
+
+<!-- CHAMPIONSHIPS -->
+<div class="overlay" id="champs" hidden>
+  <div class="card wide">
+    <div class="topbar"><button class="back" data-go="home">← Home</button><span class="coins" id="champCoins">0</span></div>
+    <p class="eyebrow">Career</p><h2 class="h2">Championships</h2>
+    <p class="sub">Knockout draws, first to 3 games per match, tie-break at 3–3. Titles unlock the next tour.</p>
+    <div class="tiers" id="tierList"></div>
+  </div>
+</div>
+
+<!-- BRACKET -->
+<div class="overlay" id="bracketView" hidden>
+  <div class="card wide">
+    <div class="topbar"><button class="back" data-go="home">← Home</button><span class="coins" id="brCoins">0</span></div>
+    <p class="eyebrow" id="brTier">Championship</p><h2 class="h2" id="brTitle">Draw</h2>
+    <p class="sub" id="brSub"></p>
+    <div class="bracket" id="bracket"></div>
+    <div class="row2"><button class="btn" id="btnPlayNext">Play next match</button><button class="btn ghost" id="btnPartnerFromBr">Change partner</button></div>
+    <button class="back" id="btnRetire" style="justify-self:start">Withdraw from this championship</button>
+  </div>
+</div>
+
+<!-- MY PLAYER -->
+<div class="overlay" id="player" hidden>
+  <div class="card wide">
+    <div class="topbar"><button class="back" data-go="home">← Home</button><span class="coins" id="plCoins">0</span></div>
+    <div class="tabs" role="tablist"><button role="tab" id="tabSkills" aria-selected="true">Skills</button><button role="tab" id="tabLook" aria-selected="false">Look</button></div>
+    <div class="split">
+      <canvas id="preview" width="480" height="560" aria-label="Your player"></canvas>
+      <div>
+        <div id="paneSkills" style="display:grid;gap:12px">
+          <div class="sp-head"><div class="sp-pill"><b id="plSp">0</b><span>skill points</span></div>
+            <div style="flex:1;min-width:0"><p class="eyebrow">Level <span id="plLvl">1</span> · <span id="plXpTxt"></span></p><div class="xpbar"><i id="plXp" style="width:0%"></i></div></div></div>
+          <p class="sub" id="spMsg" style="font-size:13px" aria-live="polite"></p>
+          <div class="attrs" id="attrList"></div>
+          <p class="sub" style="font-size:13px">XP is never spent: it fills your level bar. Every new level gives you <b>2 skill points</b>. Each <b>+</b> uses 1 skill point; when you have none left you can buy a point with coins instead. Skills go up to 10.</p>
+          <div class="row2"><button class="btn ghost small" id="btnResetSkills">Reset skills · get points back</button></div>
+        </div>
+        <div id="paneLook" hidden style="display:grid;gap:12px">
+          <div class="opts" id="lookOpts"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PARTNERS -->
+<div class="overlay" id="partners" hidden>
+  <div class="card wide">
+    <div class="topbar"><button class="back" id="partnersBack">← Back</button><span class="coins" id="paCoins">0</span></div>
+    <p class="eyebrow">Your team</p><h2 class="h2">Partners</h2>
+    <p class="sub">Your partner plays the other side of the court. Attackers smash and press the net, defenders lob and use the glass. Sign better partners with prize money.</p>
+    <div class="pgrid" id="partnerGrid"></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="overlay" id="settings" hidden>
+  <div class="card">
+    <div class="topbar"><button class="back" data-go="home">← Home</button></div>
+    <p class="eyebrow">Game</p><h2 class="h2">Settings</h2>
+    <div class="opts">
+      <span class="lab">Controls</span><div class="seg" id="optControls" data-key="controls"><button data-v="stick">Simple (swipe)</button><button data-v="pro">Console</button><button data-v="classic">Classic</button></div>
+      <span class="lab">Court colour</span><div class="seg" id="optCourt" data-key="court"><button data-v="blue">Blue</button><button data-v="green">Green</button><button data-v="grey">Grey</button></div>
+      <span class="lab">Players</span><div class="seg" id="optRoster" data-key="roster"><button data-v="lowveld">Lowveld Padel league</button><button data-v="world">World tour</button></div>
+      <span class="lab">Aim assist</span><div class="seg" id="optAssist" data-key="assist"><button data-v="1">On</button><button data-v="0">Off</button></div>
+      <span class="lab">Running</span><div class="seg" id="optAuto" data-key="auto"><button data-v="0">Manual</button><button data-v="1">Auto-run</button></div>
+      <span class="lab">Bounce marker</span><div class="seg" id="optRing" data-key="ring"><button data-v="1">On</button><button data-v="0">Off</button></div>
+      <span class="lab">Umpire voice</span><div class="seg" id="optVoice" data-key="voice"><button data-v="1">On</button><button data-v="0">Off</button></div>
+      <span class="lab">Camera</span><div class="seg" id="optCam" data-key="cam"><button data-v="behind">Behind player</button><button data-v="tv">Broadcast</button><button data-v="high">High</button></div>
+      <span class="lab">Graphics</span><div class="seg" id="optQuality" data-key="quality"><button data-v="auto">Auto</button><button data-v="high">High</button><button data-v="medium">Medium</button><button data-v="low">Low</button></div>
+    </div>
+    <ul class="rules">
+      <li><b>Simple</b> (default): <b>left thumb</b> runs your player (a stick appears where you touch); <b>right thumb swipes</b> to hit. Swipe up towards where you want the ball to go; a hard flick hits a power drive. <b>Short, soft swipe</b> = drop shot (chiquita from the back). <b>Swipe down</b> = lob. <b>Tap</b> = safe shot. On a <b>high ball</b>: straight swipe = <b>bandeja</b>, hard straight flick = <b>smash</b>, <b>angled swipe (about 45°, left or right) = víbora</b>. Swipe as the ring closes for a Perfect hit. When the SUPER bar is full, a hard flick fires a <b>super shot</b>. <b>Serve</b>: move with the left thumb, tap the right side to bounce the ball, then swipe up (angle it to aim at the T or wide).</li>
+      <li><b>Console</b>: your <b>left thumb</b> runs your player and aims (push left or right as you hit to send the ball that way). On the right, <b>hold</b> DRIVE, LOB, DROP or SMASH to build power and <b>release</b> as the ring closes on you. DRIVE on a high ball plays a bandeja (víbora if you aim wide); SMASH on a low ball is a power drive. To serve, steer the target with your left thumb and hold and release any shot button.</li>
+      <li><b>Stick-style</b>, one thumb anywhere: <b>flick</b> towards where you want the ball to go; a <b>long, fast flick</b> hits harder and smashes a high ball; a <b>short, soft flick</b> plays a drop shot (at the net) or chiquita (from the back); <b>flick down</b> for a lob; a <b>tap</b> plays a safe drive (bandeja on a high ball); flick wide on a high ball for a <b>víbora</b>. Your player runs automatically, but <b>press, hold and drag</b> to move yourself whenever you want. To serve, drag the target and release. <b>Classic</b> gives you the joystick and separate buttons.</li>
+      <li><b>Timing</b>: as the ball comes, a ring shrinks onto your orange marker. Swing when it turns yellow for a <b>Perfect</b> hit: more pace, pinpoint aim and a moment of slow motion. Early pulls the ball across, late pushes it wide.</li>
+      <li><b>Aim assist</b> sends un-aimed shots to the open side, gives a little extra reach and steps you towards the ball. Turn it off for full control.</li>
+      <li><b>Graphics: Auto</b> lowers detail if your phone struggles.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- FEEDBACK -->
+<div class="overlay" id="feedback" hidden>
+  <div class="card">
+    <div class="topbar"><button class="back" data-go="home">← Home</button></div>
+    <p class="eyebrow">Beta test</p><h2 class="h2">Send feedback</h2>
+    <p class="sub">Tell us what felt good and what felt wrong: controls, timing, difficulty, anything confusing. It goes straight to the developer.</p>
+    <div class="seg stars" id="fbStars" aria-label="Rating"><button data-v="1" aria-label="1 star">★</button><button data-v="2" aria-label="2 stars">★</button><button data-v="3" aria-label="3 stars">★</button><button data-v="4" aria-label="4 stars">★</button><button data-v="5" aria-label="5 stars">★</button></div>
+    <textarea id="fbText" class="txt" rows="5" maxlength="2000" style="max-width:none;resize:vertical;font-family:var(--body)" placeholder="e.g. Smashes are too hard to time on my phone…"></textarea>
+    <button class="btn" id="fbSend">Send</button>
+    <p class="sub" id="fbMsg" aria-live="polite"></p>
+  </div>
+</div>
+
+<!-- TRAINING -->
+<div class="overlay" id="training" hidden>
+  <div class="card wide">
+    <div class="topbar"><button class="back" data-go="home">← Home</button><span class="coins" id="trCoins">0</span></div>
+    <p class="eyebrow">Practice court</p><h2 class="h2">Training</h2>
+    <p class="sub">Ten balls from the machine per drill. Points for every good shot; your score × 3 is the XP you earn. Your best score is kept.</p>
+    <div class="tiers" id="drillList"></div>
+  </div>
+</div>
+
+<!-- LEADERBOARD -->
+<div class="overlay" id="leaders" hidden>
+  <div class="card wide">
+    <div class="topbar"><button class="back" data-go="home">← Home</button><span class="coins" id="lbCoins">0</span></div>
+    <p class="eyebrow">Everyone you share the game with</p><h2 class="h2">Leaderboard</h2>
+    <div class="tabs" role="tablist"><button role="tab" id="lbWeek" aria-selected="true">This week</button><button role="tab" id="lbAll" aria-selected="false">All time</button><button role="tab" id="lbCountry" aria-selected="false">My country</button></div>
+    <p class="sub" id="lbNote"></p>
+    <div style="overflow-x:auto"><table class="lb" id="lbTable"></table></div>
+  </div>
+</div>
+
+<!-- QUICK MATCH -->
+<div class="overlay" id="quick" hidden>
+  <div class="card">
+    <div class="topbar"><button class="back" data-go="home">← Home</button></div>
+    <p class="eyebrow">Exhibition</p><h2 class="h2">Quick match</h2>
+    <div class="opts">
+      <span class="lab">Partner</span><div class="seg" id="qPartner"></div>
+      <label for="optMatch">Length</label><div class="seg" id="optMatch" data-key="games"><button data-v="3">3 games</button><button data-v="6">Full set · 6</button></div>
+      <label for="optDiff">Opponents</label><div class="seg" id="optDiff" data-key="diff"><button data-v="easy">Club</button><button data-v="normal">Regional</button><button data-v="hard">Pro</button></div>
+    </div>
+    <ul class="rules">
+      <li class="touchonly" style="display:list-item"><b>Stick-style</b> (default): <b>flick</b> where you want the ball to go (longer and faster = harder, smash on high balls), <b>soft flick</b> for a drop shot, <b>flick down</b> for a lob, <b>tap</b> for a safe drive. <b>Hold and drag</b> to move yourself. <b>Classic</b> (Settings): <b>Left thumb</b> moves. <b>SWING</b>: tap for a drive, swipe left or right to aim, up for power. <b>LOB</b> and <b>DROP</b> are their own buttons.</li>
+      <li class="keysonly"><b>Arrows or WASD</b> move. <b>Space</b> swings (hold <b>↑</b> for power), <b>Shift</b> lobs, <b>Z</b> drop shot. Hold ← or → to aim.</li>
+      <li>On a high ball: tap for a <b>bandeja</b>, swipe sideways (or hold ← / →) for a <b>víbora</b>, swipe up (or hold ↑) to <b>smash</b>.</li>
+      <li><b>DROP</b> (or Z) near the net is a <b>drop shot</b>; from the back it's a <b>chiquita</b> at the net players' feet. Place your serve with the yellow target.</li>
+    </ul>
+    <p class="sub" style="font-size:13px">Quick matches give a little XP but no prize money.</p>
+    <button class="btn" id="btnQuickGo">Go to coin toss</button>
+  </div>
+</div>
+
+<!-- TOSS -->
+<div class="overlay" id="toss" hidden>
+  <div class="card toss">
+    <p class="toss-coin" id="tossCoin">Coin toss</p>
+    <h2 class="h2" id="tossTitle">You won the toss</h2>
+    <p class="sub" id="tossText">Choose whether to serve or receive first.</p>
+    <div class="opts">
+      <label for="optStart">Start by</label>
+      <div class="seg" id="optStart" data-key="start"><button data-v="serve">Serving</button><button data-v="receive">Receiving</button></div>
+      <label for="optSide">Your side</label>
+      <div class="seg" id="optSide" data-key="side"><button data-v="left">Left · revés</button><button data-v="right">Right · drive</button></div>
+      <label for="optFirst">Serves first</label>
+      <div class="seg" id="optFirst" data-key="first"><button data-v="you">You</button><button data-v="partner">Partner</button></div>
+    </div>
+    <p class="sub note" style="font-size:13px">Sides are fixed for the whole set: whoever plays the right side receives every serve that comes to the right box.</p>
+    <button class="btn" id="btnStart">Start match</button>
+  </div>
+</div>
+
+<div class="overlay" id="pause" hidden>
+  <div class="card">
+    <h2 class="h2">Paused</h2>
+    <p class="sub" id="pauseNote"></p>
+    <div class="row2"><button class="btn" id="btnResume">Resume</button><button class="btn ghost" id="btnQuit">Quit match</button></div>
+    <button class="back online-only" id="pauseFeedback" hidden style="justify-self:start">Send feedback</button>
+    <button class="back online-only" id="pauseReport" hidden style="justify-self:start">Player won't move? Send a problem report</button><span class="sub" id="reportMsg" style="font-size:13px"></span>
+  </div>
+</div>
+
+<!-- RESULT -->
+<div class="overlay" id="result" hidden>
+  <div class="card">
+    <p class="eyebrow" id="resEyebrow">Match</p>
+    <h2 class="brand" id="resTitle" style="font-size:clamp(40px,8vw,64px)">Won</h2>
+    <p class="sub" id="resSub"></p>
+    <div id="resLevel" class="levelup" hidden></div>
+    <div class="stats" id="resStats"></div>
+    <div class="row2"><button class="btn" id="btnResNext">Continue</button><button class="btn ghost" id="btnResHome">Home</button></div>
+  </div>
+</div>

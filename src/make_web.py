@@ -1,6 +1,6 @@
 # Builds the installable website version (PWA) into ../padelpro/web from padel-doubles-3d.html
 import hashlib, json, os, re, shutil
-SRC='/home/claude/padel3d/padel-doubles-3d.html'; OUT='/home/claude/padelpro/web'
+SRC='/home/claude/padel3d/padel-doubles-3d.html'; OUT='/home/claude/playpadel/web'
 b=open(SRC).read()
 ver=hashlib.sha1(b.encode()).hexdigest()[:10]
 head=('<!doctype html>\n<html lang="en"><head><meta charset="utf-8">'

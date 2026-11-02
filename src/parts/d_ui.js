@@ -1,8 +1,10 @@
 
 // ------------------------------------------------------------------ opponents + tournaments
-function makeOpp(band) {
-  const lp = settings.roster === 'lowveld' ? makeLowveldPair(band) : null;
-  const names = lp ? lp.players.map(p => surname(p[0])) : [...SURNAMES].sort(() => Math.random() - .5).slice(0, 2), kit = lp ? LP_FR[lp.fr][1] : pick(KITS);
+function makeOpp(band, used) {
+  const lp = settings.roster === 'lowveld' ? makeLowveldPair(band, used) : null;
+  const names = lp ? lp.players.map(p => lpName(p[0])) : [...SURNAMES].filter(n => !(used && used.has(n))).sort(() => Math.random() - .5).slice(0, 2);
+  if (!lp && used) names.forEach(n => used.add(n));
+  const kit = lp ? LP_FR[lp.fr][1] : pick(KITS);
   const ratings = [rand(band[0], band[1]), rand(band[0], band[1])];
   const looks = [0, 1].map(i => ({ skin: pick(LOOK.skin), hair: pick(LOOK.hair), hairColor: pick(LOOK.hairColor), shirt: i ? shade(kit, .78) : kit, shorts: pick(['#1b2333', '#0b0b0b', '#f3f6fb']), racket: pick(LOOK.racket), hand: Math.random() < .15 ? 'L' : 'R' }));
   return { name: names.join(' / '), short: names.join(' & '), ratings, styles: [pick(['attacker', 'defender', 'allround']), pick(['attacker', 'defender', 'allround'])],
@@ -12,7 +14,8 @@ function makeOpp(band) {
 const ourName = () => (career.name || 'You') + ' + ' + PART[career.partner].short;
 function enterTier(id) {
   const t = TIER[id], teams = [{ us: true, name: ourName(), rating: teamRating(career.partner) }];
-  for (let i = 1; i < t.size; i++) { const o = makeOpp(t.band); teams.push({ name: o.name, rating: o.rating, opp: o }); }
+  const used = new Set();   // nobody plays for two teams in one draw
+  for (let i = 1; i < t.size; i++) { const o = makeOpp(t.band, used); teams.push({ name: o.name, rating: o.rating, opp: o }); }
   const order = teams.map((_, i) => i).sort(() => Math.random() - .5), r0 = [];
   for (let i = 0; i < order.length; i += 2) r0.push({ a: order[i], b: order[i + 1], w: null, score: '' });
   career.tour = { tier: id, teams, rounds: [r0], round: 0, out: false };

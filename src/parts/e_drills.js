@@ -147,7 +147,7 @@ function renderLeaders() {
     return `<tr class="${r.me ? 'me' : ''}"><td class="rank">${i + 1}</td><td><span class="dot" style="background:${/^#[0-9a-f]{6}$/i.test(r.shirt) ? r.shirt : '#93a3c2'}"></span>${flag(r.country)} ${esc(r.name)}${r.me ? ' (you)' : ''}<br><span class="rating">with ${esc(r.partner || '')}</span></td>
       <td class="num">${+r.level || 1}</td><td class="num">${t}</td><td class="num">${+r.w || 0}–${+r.l || 0}</td><td class="num"><b>${lbTab === 'week' ? (r.weekKey === wk ? +r.weekXp || 0 : 0) : +r.pts || 0}</b></td></tr>`; }).join('');
   $('lbNote').textContent = online.on ? (lbRows === null ? 'Loading the world ranking…' : lbTab === 'country' && !career.country ? 'Set your country in My player → Look to see your national ranking.'
-      : `World ranking of everyone playing Padel Doubles 3D. Week ${wk.split('-W')[1]}: XP since Monday. All time: titles, level and wins.`)
+      : `World ranking of everyone playing PlayPadel. Week ${wk.split('-W')[1]}: XP since Monday. All time: titles, level and wins.`)
     : !cloud.db ? 'Only you are shown here. The shared board works when the game is opened in Claude; share it from its Share menu so friends can join.'
     : cloud.lbDenied ? 'You can see the board, but your own row could not be saved. Ask the owner for "can use" access.'
     : lbRows === null ? 'Loading the board…' : `Week ${wk.split('-W')[1]}: XP from matches and training since Monday. All time: titles, level and wins. Everyone the game is shared with appears after their first match.`;

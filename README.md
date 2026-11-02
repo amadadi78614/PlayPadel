@@ -1,4 +1,4 @@
-# PlayPadel: Padel Doubles 3D (beta)
+# PlayPadel (beta)
 
 3D padel game for Lowveld Padel: web (lowveldpadel.co.za/play) + Android.
 

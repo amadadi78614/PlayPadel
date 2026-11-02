@@ -23,9 +23,15 @@ function applyRoster() {
 }
 applyRoster();
 // opponents: a pair from one franchise, picked near the event's level
-function makeLowveldPair(band) {
-  const frs = Object.keys(LP_FR), fr = pick(frs), partnerNames = new Set(PARTNERS.map(x => x.name)), squad = LP_ROSTER.filter(p => p[1] === fr && !partnerNames.has(p[0]) && !(career && career.name && p[0] === career.name));
+let SUR_N = null;
+function lpName(n) { if (!SUR_N) { SUR_N = {}; LP_ROSTER.forEach(p => { const k = surname(p[0]); SUR_N[k] = (SUR_N[k] || 0) + 1; }); }
+  const s = surname(n); return SUR_N[s] > 1 ? firstName(n)[0] + '. ' + s : s; }   // 'K. Jeewa' when the league has two Jeewas
+function makeLowveldPair(band, used) {
+  const partnerNames = new Set(PARTNERS.map(x => x.name)), free = p => !partnerNames.has(p[0]) && !(career && career.name && p[0] === career.name) && !(used && used.has(p[0]));
+  const frs = Object.keys(LP_FR).filter(f => LP_ROSTER.filter(p => p[1] === f && free(p)).length >= 2), fr = pick(frs.length ? frs : Object.keys(LP_FR));
+  const squad = LP_ROSTER.filter(p => p[1] === fr && (free(p) || !frs.length));
   const want = rand(band[0], band[1]);
   const ranked = squad.map(p => ({ p, d: Math.abs(lpNorm(p[3]) * .8 + .15 - want) + Math.random() * .12 })).sort((a, b) => a.d - b.d);
+  if (used) { used.add(ranked[0].p[0]); used.add(ranked[1].p[0]); }
   return { fr, players: [ranked[0].p, ranked[1].p] };
 }

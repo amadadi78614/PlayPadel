@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Padel Doubles 3D</string>
-    <string name="title_activity_main">Padel Doubles 3D</string>
+    <string name="app_name">PlayPadel</string>
+    <string name="title_activity_main">PlayPadel</string>
     <string name="package_name">com.nomz.padeldoubles</string>
     <string name="custom_url_scheme">com.nomz.padeldoubles</string>
 </resources>

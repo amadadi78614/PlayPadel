@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#0a1120"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Padel 3D"><meta name="description" content="Padel Doubles 3D: real padel on your phone. Swipe to hit, bounce serves, glass walls, bandeja, víbora, por cuatro, championships and world rankings."><meta property="og:title" content="Padel Doubles 3D"><meta property="og:description" content="Real padel on your phone. Free, no download needed."><meta property="og:image" content="icon-512.png"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><style>[hidden]{display:none!important}body{margin:0}</style></head><body>
-<title>Padel Doubles 3D</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#0a1120"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Padel 3D"><meta name="description" content="PlayPadel: real padel on your phone. Swipe to hit, bounce serves, glass walls, bandeja, víbora, por cuatro, championships and world rankings."><meta property="og:title" content="PlayPadel"><meta property="og:description" content="Real padel on your phone. Free, no download needed."><meta property="og:image" content="icon-512.png"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"><style>[hidden]{display:none!important}body{margin:0}</style></head><body>
+<title>PlayPadel</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Condensed:wght@500;700;800&family=Archivo:wght@400;500;600&display=swap">
@@ -338,7 +338,7 @@ body.stick #prompt { white-space: normal; text-align: center; width: 90vw; font-
 <!-- HOME -->
 <div class="overlay" id="home">
   <div class="card home">
-    <h1 class="brand">Padel<br><em>Doubles</em> 3D</h1>
+    <h1 class="brand">Play<br><em>Padel</em></h1>
     <div class="profile">
       <div class="avatar" id="homeAvatar">Y</div>
       <div style="min-width:0">
@@ -701,10 +701,16 @@ function applyRoster() {
 }
 applyRoster();
 // opponents: a pair from one franchise, picked near the event's level
-function makeLowveldPair(band) {
-  const frs = Object.keys(LP_FR), fr = pick(frs), partnerNames = new Set(PARTNERS.map(x => x.name)), squad = LP_ROSTER.filter(p => p[1] === fr && !partnerNames.has(p[0]) && !(career && career.name && p[0] === career.name));
+let SUR_N = null;
+function lpName(n) { if (!SUR_N) { SUR_N = {}; LP_ROSTER.forEach(p => { const k = surname(p[0]); SUR_N[k] = (SUR_N[k] || 0) + 1; }); }
+  const s = surname(n); return SUR_N[s] > 1 ? firstName(n)[0] + '. ' + s : s; }   // 'K. Jeewa' when the league has two Jeewas
+function makeLowveldPair(band, used) {
+  const partnerNames = new Set(PARTNERS.map(x => x.name)), free = p => !partnerNames.has(p[0]) && !(career && career.name && p[0] === career.name) && !(used && used.has(p[0]));
+  const frs = Object.keys(LP_FR).filter(f => LP_ROSTER.filter(p => p[1] === f && free(p)).length >= 2), fr = pick(frs.length ? frs : Object.keys(LP_FR));
+  const squad = LP_ROSTER.filter(p => p[1] === fr && (free(p) || !frs.length));
   const want = rand(band[0], band[1]);
   const ranked = squad.map(p => ({ p, d: Math.abs(lpNorm(p[3]) * .8 + .15 - want) + Math.random() * .12 })).sort((a, b) => a.d - b.d);
+  if (used) { used.add(ranked[0].p[0]); used.add(ranked[1].p[0]); }
   return { fr, players: [ranked[0].p, ranked[1].p] };
 }
 
@@ -1349,7 +1355,7 @@ function shot(who, aim) {
     default: tz = dir * (p.human ? 5 + power * 3.6 + rand(-M.scatter, M.scatter) : rand(5, 9)); speed = p.human ? M.drive + power * 2 : rand(11.5, 14) * pw;
   }
   if (!p.human) {
-    let err = A.err * (1 + Math.max(0, r.shots - 10) * .07); if (kind === 'smash' || kind === 'power') err *= 1.4; if (kind === 'bandeja') err *= .7;
+    let err = A.err * (1 + Math.max(0, r.shots - 10) * .08 + Math.max(0, r.shots - 20) ** 2 * .015);   // tiring legs: marathon AI rallies end before ~35 shots if (kind === 'smash' || kind === 'power') err *= 1.4; if (kind === 'bandeja') err *= .7;
     if (Math.random() < err) { const e = Math.random();
       if (e < .4) tz = dir * rand(10.6, 12); else if (e < .7) tx = Math.sign(tx || 1) * rand(5.4, 6.2); else netErr = true; }
   } else {
@@ -2081,7 +2087,7 @@ function renderLeaders() {
     return `<tr class="${r.me ? 'me' : ''}"><td class="rank">${i + 1}</td><td><span class="dot" style="background:${/^#[0-9a-f]{6}$/i.test(r.shirt) ? r.shirt : '#93a3c2'}"></span>${flag(r.country)} ${esc(r.name)}${r.me ? ' (you)' : ''}<br><span class="rating">with ${esc(r.partner || '')}</span></td>
       <td class="num">${+r.level || 1}</td><td class="num">${t}</td><td class="num">${+r.w || 0}–${+r.l || 0}</td><td class="num"><b>${lbTab === 'week' ? (r.weekKey === wk ? +r.weekXp || 0 : 0) : +r.pts || 0}</b></td></tr>`; }).join('');
   $('lbNote').textContent = online.on ? (lbRows === null ? 'Loading the world ranking…' : lbTab === 'country' && !career.country ? 'Set your country in My player → Look to see your national ranking.'
-      : `World ranking of everyone playing Padel Doubles 3D. Week ${wk.split('-W')[1]}: XP since Monday. All time: titles, level and wins.`)
+      : `World ranking of everyone playing PlayPadel. Week ${wk.split('-W')[1]}: XP since Monday. All time: titles, level and wins.`)
     : !cloud.db ? 'Only you are shown here. The shared board works when the game is opened in Claude; share it from its Share menu so friends can join.'
     : cloud.lbDenied ? 'You can see the board, but your own row could not be saved. Ask the owner for "can use" access.'
     : lbRows === null ? 'Loading the board…' : `Week ${wk.split('-W')[1]}: XP from matches and training since Monday. All time: titles, level and wins. Everyone the game is shared with appears after their first match.`;
@@ -2099,7 +2105,7 @@ $('lbWeek').addEventListener('click', () => setLbTab('week')); $('lbAll').addEve
 function showLeaders() { pushLeaderboard(); renderLeaders(); showScreen('leaders'); loadLeaders(); }
 
 // ------------------------------------------------------------------ online (website + Android app): world leaderboard + feedback via Supabase
-const BUILD = '708d468', APP_VERSION = '0.9-beta+' + BUILD;
+const BUILD = '4197400', APP_VERSION = '0.9-beta+' + BUILD;
 const SB_URL = 'https://eqyiqkllhqjswqrfqwdp.supabase.co', SB_KEY = 'sb_publishable_oeEGuYG6i3AcHT1Sen6wFQ_zLC0O54U';
 const EMBEDDED = !!(window.claude && typeof window.claude.use === 'function');    // inside Claude the page uses Claude's own storage instead
 const PLATFORM = (window.Capacitor && window.Capacitor.getPlatform && window.Capacitor.getPlatform()) || 'web';
@@ -2202,9 +2208,11 @@ async function diagSend(reason) {
 }
 
 // ------------------------------------------------------------------ opponents + tournaments
-function makeOpp(band) {
-  const lp = settings.roster === 'lowveld' ? makeLowveldPair(band) : null;
-  const names = lp ? lp.players.map(p => surname(p[0])) : [...SURNAMES].sort(() => Math.random() - .5).slice(0, 2), kit = lp ? LP_FR[lp.fr][1] : pick(KITS);
+function makeOpp(band, used) {
+  const lp = settings.roster === 'lowveld' ? makeLowveldPair(band, used) : null;
+  const names = lp ? lp.players.map(p => lpName(p[0])) : [...SURNAMES].filter(n => !(used && used.has(n))).sort(() => Math.random() - .5).slice(0, 2);
+  if (!lp && used) names.forEach(n => used.add(n));
+  const kit = lp ? LP_FR[lp.fr][1] : pick(KITS);
   const ratings = [rand(band[0], band[1]), rand(band[0], band[1])];
   const looks = [0, 1].map(i => ({ skin: pick(LOOK.skin), hair: pick(LOOK.hair), hairColor: pick(LOOK.hairColor), shirt: i ? shade(kit, .78) : kit, shorts: pick(['#1b2333', '#0b0b0b', '#f3f6fb']), racket: pick(LOOK.racket), hand: Math.random() < .15 ? 'L' : 'R' }));
   return { name: names.join(' / '), short: names.join(' & '), ratings, styles: [pick(['attacker', 'defender', 'allround']), pick(['attacker', 'defender', 'allround'])],
@@ -2214,7 +2222,8 @@ function makeOpp(band) {
 const ourName = () => (career.name || 'You') + ' + ' + PART[career.partner].short;
 function enterTier(id) {
   const t = TIER[id], teams = [{ us: true, name: ourName(), rating: teamRating(career.partner) }];
-  for (let i = 1; i < t.size; i++) { const o = makeOpp(t.band); teams.push({ name: o.name, rating: o.rating, opp: o }); }
+  const used = new Set();   // nobody plays for two teams in one draw
+  for (let i = 1; i < t.size; i++) { const o = makeOpp(t.band, used); teams.push({ name: o.name, rating: o.rating, opp: o }); }
   const order = teams.map((_, i) => i).sort(() => Math.random() - .5), r0 = [];
   for (let i = 0; i < order.length; i += 2) r0.push({ a: order[i], b: order[i + 1], w: null, score: '' });
   career.tour = { tier: id, teams, rounds: [r0], round: 0, out: false };

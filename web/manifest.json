@@ -1,7 +1,7 @@
 {
  "id": "padel-doubles-3d",
- "name": "Padel Doubles 3D",
- "short_name": "Padel 3D",
+ "name": "PlayPadel",
+ "short_name": "PlayPadel",
  "description": "Real padel doubles on your phone: swipe to hit, championships and world rankings.",
  "start_url": "./",
  "scope": "./",

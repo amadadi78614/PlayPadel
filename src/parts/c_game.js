@@ -174,7 +174,7 @@ function shot(who, aim) {
     default: tz = dir * (p.human ? 5 + power * 3.6 + rand(-M.scatter, M.scatter) : rand(5, 9)); speed = p.human ? M.drive + power * 2 : rand(11.5, 14) * pw;
   }
   if (!p.human) {
-    let err = A.err * (1 + Math.max(0, r.shots - 10) * .07); if (kind === 'smash' || kind === 'power') err *= 1.4; if (kind === 'bandeja') err *= .7;
+    let err = A.err * (1 + Math.max(0, r.shots - 10) * .08 + Math.max(0, r.shots - 20) ** 2 * .015);   // tiring legs: marathon AI rallies end before ~35 shots if (kind === 'smash' || kind === 'power') err *= 1.4; if (kind === 'bandeja') err *= .7;
     if (Math.random() < err) { const e = Math.random();
       if (e < .4) tz = dir * rand(10.6, 12); else if (e < .7) tx = Math.sign(tx || 1) * rand(5.4, 6.2); else netErr = true; }
   } else {
